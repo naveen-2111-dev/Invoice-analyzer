@@ -7,7 +7,7 @@ on:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  NEXT_MONGO_DB_URL: ${{ secrets.MONGODB_URI }}
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
     
 jobs:
   checks:
