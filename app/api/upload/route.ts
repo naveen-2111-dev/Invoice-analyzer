@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         };
 
         const collection = await GetCollection("uploads");
-        const result = await collection.insertOne(uploadDoc as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+        const result = await collection.insertOne(uploadDoc as any);
 
         return NextResponse.json({
             message: "File processed successfully",
