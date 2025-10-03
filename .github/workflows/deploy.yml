@@ -49,7 +49,7 @@ jobs:
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
             -H "Content-Type: application/json" \
             -d '{
-              "content": "**Deployment Successful — DevMet is Live!** 🎉\n\n ~Deployed by: *${{ github.actor }}*\n\n✨ Latest changes are now reflected in production."
+              "content": "**Deployment Successful — IA is Live!** 🎉\n\n ~Deployed by: *${{ github.actor }}*\n\n✨ Latest changes are now reflected in production."
             }'
 
   Notify-Failure:
@@ -62,5 +62,5 @@ jobs:
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
             -H "Content-Type: application/json" \
             -d '{
-              "content": "**Deployment Failed for DevMet**\n *${{ github.actor }}*\n Branch: *${{ github.ref_name }}*\n Commit: *${{ github.event.head_commit.message }}*\n🔗 [View Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              "content": "**Deployment Failed for IA**\n *${{ github.actor }}*\n Branch: *${{ github.ref_name }}*\n Commit: *${{ github.event.head_commit.message }}*\n🔗 [View Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
             }'
