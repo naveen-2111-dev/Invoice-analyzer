@@ -2,6 +2,10 @@ import { MongoClient, ServerApiVersion, Collection } from "mongodb";
 
 const URI = process.env.MONGODB_URI || "";
 
+if (!URI) {
+    throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
+}
+
 const client = new MongoClient(URI, {
     serverApi: {
         version: ServerApiVersion.v1,
