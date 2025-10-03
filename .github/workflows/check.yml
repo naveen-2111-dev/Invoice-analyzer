@@ -1,0 +1,57 @@
+name: Code-Validation
+
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  NEXT_MONGO_DB_URL: ${{ secrets.NEXT_MONGO_DB_URL }}
+    
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './package-lock.json'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Lint
+        run: npm run lint
+        
+      - name: Build
+        run: npm run build
+
+  deploy-preview:
+    needs: [checks]
+    runs-on: ubuntu-latest
+    outputs:
+      vercel_url: ${{ steps.vercel_deploy.outputs.vercel_url }}
+    steps:
+      - uses: actions/checkout@v3
+        
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+        
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        
+      - name: Deploy Project Artifacts
+        id: vercel_deploy
+        run: |
+          echo "🚀 Deploying to Vercel..."
+          VERCEL_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "vercel_url=$VERCEL_URL" >> $GITHUB_OUTPUT

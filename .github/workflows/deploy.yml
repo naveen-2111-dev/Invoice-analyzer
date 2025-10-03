@@ -1,0 +1,55 @@
+name: Vercel Production Deployment
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  NEXT_MONGO_DB_URL: ${{ secrets.NEXT_MONGO_DB_URL }}
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+  Notify-Success:
+    needs: Deploy-Production
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord on Success
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "**Deployment Successful — DevMet is Live!** 🎉\n\n ~Deployed by: *${{ github.actor }}*\n\n✨ Latest changes are now reflected in production."
+            }'
+
+  Notify-Failure:
+    needs: Deploy-Production
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord on Failure
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "**Deployment Failed for DevMet**\n *${{ github.actor }}*\n Branch: *${{ github.ref_name }}*\n Commit: *${{ github.event.head_commit.message }}*\n🔗 [View Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            }'
