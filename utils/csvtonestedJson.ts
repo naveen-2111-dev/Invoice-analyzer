@@ -1,37 +1,34 @@
+import { Invoice, Line, Record } from "@/types/api";
 
-/**
- * @function TransformCSVToNested
- * @param records @type {any[]}
- * @description Transforms flat CSV records into a nested JSON structure.
- * as per the given structure in clean.json file
- * @returns invoice @type {any[]}
- */
-function TransformCSVToNested(records: any[]): any[] {
+export function TransformCSVToNestedJson(records: Record[]): Invoice[] {
     return records.map(row => {
-        const invoice: any = {};
-        const line: any = {};
+        const invoice: Invoice = {
+            inv_id: row.inv_no || "",
+            date: row.issued_on || "",
+            currency: row.curr || "",
+            seller_name: row.sellerName || "",
+            seller_trn: row.sellerTax || "",
+            buyer_name: row.buyerName || "",
+            buyer_trn: row.buyerTax || "",
+            total_excl_vat: row.totalNet || "",
+            vat_amount: row.vat || "",
+            total_incl_vat: row.grandTotal || "",
+            buyer_country: row.buyerCountry || "",
+            lines: []
+        };
 
-        Object.keys(row).forEach(key => {
-            const lowerKey = key.toLowerCase();
+        const line: Line = {
+            sku: row.lineSku || "",
+            qty: parseFloat(row.lineQty) || 0,
+            unit_price: parseFloat(row.linePrice) || 0,
+            line_total: parseFloat(row.lineTotal) || 0,
+            description: ""
+        };
 
-            if (lowerKey.includes('line') || lowerKey === 'sku' || lowerKey === 'qty' ||
-                lowerKey === 'unit_price' || lowerKey === 'description') {
-                if (key === 'lineSku' || key === 'sku') line.sku = row[key];
-                else if (key === 'lineQty' || key === 'qty') line.qty = parseFloat(row[key]) || row[key];
-                else if (key === 'linePrice' || key === 'unit_price') line.unit_price = parseFloat(row[key]) || row[key];
-                else if (key === 'lineTotal' || key === 'line_total') line.line_total = parseFloat(row[key]) || row[key];
-                else if (key === 'description') line.description = row[key];
-            } else {
-                invoice[key] = row[key];
-            }
-        });
-
-        if (Object.keys(line).length > 0) {
+        if (line.sku || line.qty || line.line_total) {
             invoice.lines = [line];
         }
 
         return invoice;
     });
 }
-
-export { TransformCSVToNested };
