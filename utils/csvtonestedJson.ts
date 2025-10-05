@@ -1,6 +1,7 @@
-import { Invoice, Line, Record } from "@/types/api";
+import { Invoice, Line, record } from "@/types/api";
+import { compareSample } from "./_helper";
 
-export function TransformCSVToNestedJson(records: Record[]): Invoice[] {
+export function TransformCSVToNestedJson(records: record[]): Invoice[] {
     return records.map(row => {
         const invoice: Invoice = {
             inv_id: row.inv_no || "",

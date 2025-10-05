@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/formidable": "^3.4.5",
+    "@types/string-similarity": "^4.0.2",
     "csv-parse": "^6.1.0",
     "dayjs": "^1.11.18",
     "dotenv": "^17.2.3",
