@@ -4,8 +4,9 @@ export const ACCEPTED_CURRENCIES: string[] = ["AED", "SAR", "MYR", "USD"];
 
 export async function CurrencyAnomaly(
     invoices: Partial<Invoice>[]
-): Promise<{ rule: string; results: CurrencyAnomalyFindings[] }> {
+): Promise<{ rule: string; results: CurrencyAnomalyFindings[], allOk: boolean }> {
     const findings: CurrencyAnomalyFindings[] = [];
+    let allOk = true;
 
     invoices.forEach((invoice, i) => {
         const currency = invoice.currency;
@@ -22,6 +23,7 @@ export async function CurrencyAnomaly(
         }
 
         const ok = ACCEPTED_CURRENCIES.includes(currency);
+        if (!ok) allOk = false;
 
         findings.push({
             invoice: invoice.inv_id ?? "unknown",
@@ -32,5 +34,5 @@ export async function CurrencyAnomaly(
         });
     });
 
-    return { rule: "CURRENCY_ANOMALY", results: findings };
+    return { rule: "CURRENCY_ANOMALY", results: findings, allOk };
 }

@@ -2,8 +2,9 @@ import { Invoice, LineMathAnomalyFindings } from "@/types/api";
 
 export async function LineMathAnomaly(
     invoices: Partial<Invoice>[]
-): Promise<{ rule: string; results: LineMathAnomalyFindings[] }> {
+): Promise<{ rule: string; results: LineMathAnomalyFindings[], allOk: boolean }> {
     const findings: LineMathAnomalyFindings[] = [];
+    let allOk = true;
 
     invoices.forEach((invoice, i) => {
         invoice.lines?.forEach((line, li) => {
@@ -11,10 +12,12 @@ export async function LineMathAnomaly(
             const unitPrice = Number(line.unit_price) || 0;
             const lineTotal = Number(line.line_total) || 0;
             const expected = qty * unitPrice;
+            const ok = Math.abs(expected - lineTotal) <= 0.01;
+            if (!ok) allOk = false;
 
             findings.push({
                 invoice: invoice.inv_id ?? "unknown",
-                ok: Math.abs(expected - lineTotal) <= 0.01,
+                ok,
                 expected,
                 got: lineTotal,
                 index: i + 1,
@@ -23,5 +26,5 @@ export async function LineMathAnomaly(
         });
     });
 
-    return { rule: "LINE_MATH", results: findings };
+    return { rule: "LINE_MATH", results: findings, allOk };
 }

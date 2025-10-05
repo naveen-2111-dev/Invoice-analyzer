@@ -2,30 +2,21 @@ import { Invoice, NullAnomalyFindings } from "@/types/api";
 
 export async function NullAnomaly(
     invoices: Partial<Invoice>[]
-): Promise<{ rule: string; results: NullAnomalyFindings[] }> {
+): Promise<{ rule: string; results: NullAnomalyFindings[]; allOk: boolean }> {
     const findings: NullAnomalyFindings[] = [];
+    let allOk = true;
 
     invoices.forEach((invoice, i) => {
         const buyer = invoice.buyer_trn;
         const seller = invoice.seller_trn;
 
-        if (buyer === undefined ||
-            seller === undefined ||
-            buyer === null ||
-            seller === null ||
-            buyer === "" ||
-            seller === "") {
+        if (buyer === undefined || seller === undefined || buyer === null || seller === null || buyer === "" || seller === "") {
+            allOk = false;
             findings.push({
                 invoice: invoice.inv_id ?? "unknown",
-                ok: true,
-                expected: {
-                    buyer_trn: null,
-                    seller_trn: null,
-                },
-                got: {
-                    buyer_trn: null,
-                    seller_trn: null
-                },
+                ok: false,
+                expected: { buyer_trn: null, seller_trn: null },
+                got: { buyer_trn: null, seller_trn: null },
                 index: i + 1
             });
             return;
@@ -33,18 +24,12 @@ export async function NullAnomaly(
 
         findings.push({
             invoice: invoice.inv_id ?? "unknown",
-            ok: false,
-            expected: {
-                buyer_trn: buyer,
-                seller_trn: seller
-            },
-            got: {
-                buyer_trn: buyer,
-                seller_trn: seller
-            },
+            ok: true,
+            expected: { buyer_trn: buyer, seller_trn: seller },
+            got: { buyer_trn: buyer, seller_trn: seller },
             index: i + 1
         });
     });
 
-    return { rule: "NULL_ANOMALY", results: findings };
+    return { rule: "NULL_ANOMALY", results: findings, allOk };
 }

@@ -4,7 +4,7 @@ interface Questionnaire {
     retries: boolean;
 }
 
-interface Record {
+interface record {
     inv_no: string,
     issued_on: string,
     curr: string,
@@ -81,12 +81,12 @@ interface LineMathAnomalyFindings extends Findings {
 export type {
     Questionnaire,
     Invoice,
-    Record,
+    record,
     Line,
     uploadDocType,
     Findings as TotalBalanceFindings,
     Findings as DateAnomalyFindings,
     Findings as CurrencyAnomalyFindings,
     LineMathAnomalyFindings,
-    NullAnomalyFindings
+    NullAnomalyFindings,
 };

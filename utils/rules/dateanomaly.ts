@@ -3,8 +3,9 @@ import { Invoice, DateAnomalyFindings } from "@/types/api";
 
 export async function DateAnomaly(
     invoices: Partial<Invoice>[]
-): Promise<{ rule: string; results: DateAnomalyFindings[] }> {
+): Promise<{ rule: string; results: DateAnomalyFindings[], allOk: boolean }> {
     const findings: DateAnomalyFindings[] = [];
+    let allOk = true;
 
     invoices.forEach((inv, i) => {
         const date = inv.date;
@@ -20,6 +21,7 @@ export async function DateAnomaly(
         }
 
         const ok = moment(date, ["YYYY-MM-DD", "YYYY/MM/DD"], true).isValid();
+        if (!ok) allOk = false;
 
         findings.push({
             invoice: inv.inv_id ?? "unknown",
@@ -30,5 +32,5 @@ export async function DateAnomaly(
         });
     });
 
-    return { rule: "DATE_ANOMALY", results: findings };
+    return { rule: "DATE_ANOMALY", results: findings, allOk };
 }
