@@ -5,7 +5,6 @@ import { randomUUID } from "crypto";
 
 import { record, uploadDocType } from "@/types/api";
 import { TransformCSVToNestedJson } from "@/utils/csvtonestedJson";
-import { compareSample } from "@/utils/_helper";
 
 //Row limit for both csv and json files
 const MAX_ROWS = 200;

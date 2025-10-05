@@ -93,6 +93,7 @@ export async function POST(request: Request) {
 
     const persist = {
         reportId: randomUUID(),
+        createdAt: new Date(),
         finding: ruleFinding,
         analyze: FinalAnalize,
         coverage: coverage,
@@ -103,7 +104,7 @@ export async function POST(request: Request) {
     const res = await reportCollection.insertOne(persist);
 
     if (res.insertedId)
-        return NextResponse.json({ message: "Analysis complete", ruleFinding: ruleFinding, Score: Score, finalAnalyze: FinalAnalize }, {
+        return NextResponse.json({ message: "Analysis complete", persist }, {
             status: 200,
         });
     else
