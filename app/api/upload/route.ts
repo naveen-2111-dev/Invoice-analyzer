@@ -69,7 +69,8 @@ export async function POST(request: NextRequest) {
             message: "File processed successfully",
             insertedId: result.insertedId,
             uploadId,
-            recordCount: records.length
+            recordCount: records.length,
+            records: records.slice(0, 20)
         });
     } catch (error) {
         console.error("Upload error:", error);
