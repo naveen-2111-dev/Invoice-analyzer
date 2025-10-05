@@ -76,8 +76,8 @@ export function compareSample(uploadedInvoice: record[]) {
     }
 
     const total = samplejson.length;
-    const matchedScore = finalMatched.size;
-    const closeScore = finalCloseMap.size * 0.8;
+    const matchedScore = finalMatched.size * 1.0;
+    const closeScore = finalCloseMap.size * 0.5;
     const coverage = ((matchedScore + closeScore) / total) * 100;
     const coverageScore = parseFloat(coverage.toFixed(2));
 

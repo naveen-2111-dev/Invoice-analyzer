@@ -1,5 +1,5 @@
 import { GetCollection } from "@/lib/mongodb/link";
-import { Invoice, Questionnaire, record, uploadDocType } from "@/types/api";
+import { Questionnaire, record, uploadDocType } from "@/types/api";
 import { compareSample } from "@/utils/_helper";
 import { CurrencyAnomaly } from "@/utils/rules/currencyanomaly";
 import { DateAnomaly } from "@/utils/rules/dateanomaly";
@@ -9,9 +9,8 @@ import { TotalBalance } from "@/utils/rules/totalbalance";
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request, context: { params: Promise<{ slug: string }> }) {
-    const { slug } = await context.params;
-    const { questionnaire }: { questionnaire: Questionnaire } = await request.json();
+export async function POST(request: Request) {
+    const { questionnaire, uploadId }: { questionnaire: Questionnaire, uploadId: string } = await request.json();
 
     //question is a json object
     if (!questionnaire || typeof questionnaire !== "object") {
@@ -19,7 +18,7 @@ export async function POST(request: Request, context: { params: Promise<{ slug: 
     }
 
     const collection = await GetCollection<uploadDocType>("uploads");
-    const doc = await collection.findOne({ uploadId: slug });
+    const doc = await collection.findOne({ uploadId: uploadId });
 
     if (!doc) {
         return NextResponse.json({ error: "Upload ID not found" }, { status: 404 });
@@ -93,9 +92,10 @@ export async function POST(request: Request, context: { params: Promise<{ slug: 
     }
 
     const persist = {
-        reportId: slug + randomUUID(),
+        reportId: randomUUID(),
         finding: ruleFinding,
         analyze: FinalAnalize,
+        coverage: coverage,
         Score: Score
     }
 
