@@ -50,6 +50,7 @@ type uploadDocType = {
     uploadedAt: Date,
     recordCount: number,
     data: Partial<Invoice>[]
+    records?: Invoice[]
 };
 
 interface Findings<T = string | number> {
