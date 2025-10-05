@@ -3,7 +3,8 @@ import { parse } from "csv-parse/sync";
 import { GetCollection } from "@/lib/mongodb/link";
 import { randomUUID } from "crypto";
 
-import { TransformCSVToNested } from "@/utils/csvtonestedJson";
+import { TransformCSVToNestedJson } from "@/utils/csvtonestedJson";
+import { Record, uploadDocType } from "@/types/api";
 
 //Row limit for both csv and json files
 const MAX_ROWS = 200;
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
                 to: MAX_ROWS
             });
 
-            records = TransformCSVToNested(parsedRecords);
+            records = TransformCSVToNestedJson(parsedRecords as Record[]);
         } //handls all csv related activities
 
         else if (fileType === "application/json" || file.name.endsWith(".json")) {
@@ -60,8 +61,8 @@ export async function POST(request: NextRequest) {
             data: records
         };
 
-        const collection = await GetCollection("uploads");
-        const result = await collection.insertOne(uploadDoc as any);
+        const collection = await GetCollection<uploadDocType>("uploads");
+        const result = await collection.insertOne(uploadDoc);
 
         return NextResponse.json({
             message: "File processed successfully",
